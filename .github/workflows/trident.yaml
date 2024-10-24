@@ -31,6 +31,10 @@ jobs:
       - name: Checkout trident repo
         run: ./checkout.sh
 
+      - name: Patch Dockerfile with alpine and nfs-utils
+        working-directory: trident-distrowith/trident
+        run: patch Dockerfile ../dockerfile.patch
+
       - name: Run make command
         working-directory: trident-distrowith/trident
         env:
