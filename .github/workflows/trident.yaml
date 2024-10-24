@@ -10,6 +10,10 @@ on:
 
 jobs:
   build:
+      # github.ref == 'refs/heads/main' &&
+    if: |
+      !github.event.pull_request.head.repo.fork
+
     runs-on: ubuntu-latest
 
     defaults:
@@ -19,15 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
       - name: Checkout trident repo
         run: ./checkout.sh
 
@@ -35,11 +30,24 @@ jobs:
         working-directory: trident-distrowith/trident
         run: patch Dockerfile ../dockerfile.patch
 
+      - name: Patch Makefile to change default registry for images
+        working-directory: trident-distrowith/trident
+        run: patch Makefile ../makefile.patch
+
       - name: Run make command
         working-directory: trident-distrowith/trident
         env:
           BUILD_TYPE: stable
         run: make images
 
-      - name: Run docker images
-        run: docker images
+      - name: List docker images
+        run: docker image ls
+
+      - name: Log in to ghcr.io registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Push docker images
+        run: |
+          docker image ls --format=json | \
+           jq 'select(.Repository == "ghcr.io/postfinance/trident") | .Repository + ":" + .Tag' | \
+           xargs -I_ docker push _
