@@ -30,6 +30,10 @@ jobs:
         working-directory: trident-distrowith/trident
         run: patch Dockerfile ../dockerfile.patch
 
+      - name: Patch chwrap.go to stop searching binaries in /host
+        working-directory: trident-distrowith/trident
+        run: patch chwrap/chwrap.go ../chwrap.patch
+
       - name: Patch Makefile to change default registry for images
         working-directory: trident-distrowith/trident
         run: patch Makefile ../makefile.patch

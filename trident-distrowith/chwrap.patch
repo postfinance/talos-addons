@@ -1,0 +1,11 @@
+--- trident/chwrap/chwrap.go.original	2024-10-25 07:59:25
++++ trident/chwrap/chwrap.go	2024-10-25 08:01:27
+@@ -53,7 +53,7 @@
+ }
+
+ func main() {
+-	rootPath := "/host"
++	rootPath := "/" // Oct. 24, Clément Nussbaumer: for talos we only consider binaries in the base image, not the host
+ 	// First modify argv0 to strip off any absolute or relative paths
+ 	argv := os.Args
+ 	binary := argv[0]
