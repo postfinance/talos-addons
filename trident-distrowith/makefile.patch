@@ -1,0 +1,22 @@
+--- trident/Makefile.original	2024-10-25 09:11:22
++++ trident/Makefile	2024-10-25 09:21:23
+@@ -93,7 +93,7 @@
+
+ # Constants
+ ALL_PLATFORMS = linux/amd64 linux/arm64 windows/amd64/ltsc2022 windows/amd64/ltsc2019 darwin/amd64
+-DEFAULT_REGISTRY = docker.io/netapp
++DEFAULT_REGISTRY = ghcr.io/postfinance
+ TRIDENT_CONFIG_PKG = github.com/netapp/trident/config
+ OPERATOR_CONFIG_PKG = github.com/netapp/trident/operator/config
+ TRIDENT_KUBERNETES_PKG = github.com/netapp/trident/persistent_store/crd
+@@ -120,8 +120,9 @@
+ TRIDENT_VERSION := $(VERSION)-$(BUILD_TYPE).$(BUILD_TYPE_REV)
+ endif
+
++CUSTOM_IMAGE_TAG ?=
+ # tag variables
+-TRIDENT_TAG := $(REGISTRY)/$(TRIDENT_IMAGE):$(TRIDENT_VERSION)
++TRIDENT_TAG := $(REGISTRY)/$(TRIDENT_IMAGE):$(TRIDENT_VERSION)-$(CUSTOM_IMAGE_TAG)
+ OPERATOR_TAG := $(REGISTRY)/$(OPERATOR_IMAGE):$(TRIDENT_VERSION)
+ TRIDENT_IMAGE_REPO := $(REGISTRY)/$(TRIDENT_IMAGE):
+ DEFAULT_OPERATOR_TAG := $(DEFAULT_REGISTRY)/$(OPERATOR_IMAGE):$(VERSION)
