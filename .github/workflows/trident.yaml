@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-      # github.ref == 'refs/heads/main' &&
+    # github.ref == 'refs/heads/main' &&
     if: |
       !github.event.pull_request.head.repo.fork
 
@@ -42,10 +42,43 @@ jobs:
         working-directory: trident-distrowith/trident
         env:
           BUILD_TYPE: stable
-        run: make images
+        run: |
+          export CUSTOM_IMAGE_TAG=pf-$(echo $GITHUB_REF_NAME | tr "/" "-") && \
+          make images
 
       - name: List docker images
         run: docker image ls
+
+      - name: Export docker images as artifacts
+        run: |
+          mkdir -p /tmp/docker-images/
+          docker image ls --format=json | \
+           jq -s '[.[] | select(.Repository | test("ghcr.io/postfinance/trident.*"))] | unique_by(.ID) |.[] | .Repository + ":" + .Tag' | \
+           xargs -I_ docker save _ -o /tmp/docker-images/_.tar
+
+      - name: Upload docker images artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom-trident-images
+          path: /tmp/docker-images/*.tar
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: custom-trident-images
+          path: docker-images/
+
+      - name: Display structure of downloaded files
+        run: find .
+
+      - name: Load image(s)
+        run: |
+          find docker-images/ -name "*.tar" -exec docker load --input {} \;
+          docker image ls
 
       - name: Log in to ghcr.io registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
