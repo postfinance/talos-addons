@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "config:base",
+    ":disableRateLimiting",
+    ":semanticCommits",
+    ":rebaseStalePrs"
+  ],
+  "baseBranches": [
+    "main"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "(^|/).*/checkout.sh$"
+      ],
+      "matchStrings": [
+        "\\w+=(?<currentValue>[^\\s]+) # repoName=(?<depName>[^\\s]+)"
+      ],
+      "datasourceTemplate": "github-releases"
+    }
+  ]
+}
