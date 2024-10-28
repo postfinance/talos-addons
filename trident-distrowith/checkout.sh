@@ -2,7 +2,7 @@
 
 
 REPO_URL="https://github.com/NetApp/trident.git"
-TRIDENT_VERSION="v24.06.1"
+TRIDENT_VERSION="v24.06.1" # repoName=netapp/trident
 DEST_DIR="trident"
 
 # Remove destination directory if it exists
