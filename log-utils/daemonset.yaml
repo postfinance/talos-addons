@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: logs-utils
+  name: logs-utils
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: logs-utils
+  template:
+    metadata:
+      labels:
+        k8s-app: logs-utils
+    spec:
+      containers:
+        - image: balabit/syslog-ng
+          imagePullPolicy: Always
+          # readinessProbe: TODO ?
+          name: rpcbind
+          volumeMounts:
+            - mountPath: /etc/syslog-ng
+              name: syslog-ng-config
+          ports:
+            - protocol: UDP
+              containerPort: 514
+              hostPort: 514
+
+          resources:
+            {}
+            # add:
+            # - CHOWN
+            # - KILL
+            # - NET_ADMIN
+            # - NET_RAW
+            # - IPC_LOCK
+            # - SYS_ADMIN
+            # - SYS_RESOURCE
+            # - DAC_OVERRIDE
+            # - FOWNER
+            # - SETGID
+            # - SETUID
+            # drop:
+            # - ALL
+            # seLinuxOptions:
+            # level: s0
+            # type: spc_t
+          # startupProbe:
+          # failureThreshold: 105
+      priorityClassName: system-node-critical
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 1
+      volumes:
+        - name: syslog-ng-config
+          configMap:
+            name: syslog-ng-config
+            items:
+              - key: syslog-ng.conf
+                path: syslog-ng.conf
+      tolerations:
+        - operator: Exists
