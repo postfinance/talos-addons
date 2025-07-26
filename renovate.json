@@ -1,17 +1,18 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     ":disableRateLimiting",
     ":semanticCommits",
     ":rebaseStalePrs"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "main"
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": [
-        "(^|/).*/checkout.sh$"
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/).*/checkout.sh$/"
       ],
       "matchStrings": [
         "\\w+=(?<currentValue>[^\\s]+) # repoName=(?<depName>[^\\s]+)"
