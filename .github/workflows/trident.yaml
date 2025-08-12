@@ -20,7 +20,7 @@ jobs:
         working-directory: trident-distrowith
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Checkout trident repo
         run: ./checkout.sh
